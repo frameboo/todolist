@@ -48,7 +48,7 @@ jobs:
           target: "todolist"
           strip_components: 1
       - name: deploy app
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
