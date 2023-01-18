@@ -48,8 +48,8 @@ services:
       - 5432
     healthcheck:
       test: pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}
-      interval: 3s
-      timeout: 3s
+      interval: 5s
+      timeout: 5s
       retries: 3
 
 volumes:
