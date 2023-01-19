@@ -1,9 +1,6 @@
 #_______#
 name: Build and deploy workflow
-on:
-  pull_request:
-  push:
-    branches: master
+on: [push]
 
 jobs:
   build_and_push:
@@ -44,7 +41,7 @@ jobs:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           password: ${{ secrets.PASSWORD }}
-          source: "deploy/*"
+          source: "deploy/docker-compose.yaml"
           target: "todolist"
           strip_components: 1
       - name: deploy app
