@@ -22,7 +22,7 @@ jobs:
       POSTGRES_HOST: ${{ secrets.POSTGRES_HOST }}
       POSTGRES_USER: ${{ secrets.DB_USER }}
       POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
-      POSTGRES_NAME: ${{ secrets.DB_NAME }}
+      POSTGRES_DB: ${{ secrets.DB_NAME }}
       POSTGRES_ENGINE: ${{ secrets.DB_ENGINE }}
       SECRET_KEY: ${{ secrets.SECRET_KEY }}
 #      SOCIAL_AUTH_VK_OAUTH2_KEY: ${{ secrets.SOCIAL_AUTH_VK_OAUTH2_KEY }}
