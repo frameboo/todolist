@@ -3,6 +3,7 @@ from django.contrib.auth import (
     get_user_model
 )
 from django.contrib.auth.hashers import make_password
+from django.contrib.auth.password_validation import validate_password
 from rest_framework import (
     exceptions,
     serializers
@@ -16,6 +17,11 @@ class RegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     password_repeat = serializers.CharField(write_only=True)
 
+    def validate_password(self, value):
+        """Ensure password is valid"""
+        validate_password(value)
+        return value
+
     def create(self, validated_data) -> USER_MODEL:
         password = validated_data.get('password')
         password_repeat = validated_data.pop('password_repeat')
@@ -23,8 +29,8 @@ class RegistrationSerializer(serializers.ModelSerializer):
         if password != password_repeat:
             raise serializers.ValidationError('Passwords do not match.')
 
-        hashed_password = make_password(password)
-        validated_data['password'] = hashed_password
+        #        hashed_password = make_password(password)
+        validated_data['password'] = make_password(validated_data['password'])
         instance = super().create(validated_data)
         return instance
 
@@ -52,7 +58,6 @@ class LoginSerializer(serializers.ModelSerializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = USER_MODEL
         fields = ['id', 'username', 'first_name', 'last_name', 'email']
@@ -63,10 +68,15 @@ class UpdatePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=True, write_only=True)
     new_password = serializers.CharField(required=True, write_only=True)
 
+    def validate_new_password(self, value):
+        validate_password(value)
+        return value
+
     def validate(self, attrs):
         user = attrs['user']
         if not user.check_password(attrs['old_password']):
             raise serializers.ValidationError({'old_password': 'incorrect password'})
+
         return attrs
 
     def update(self, instance, validated_data):
