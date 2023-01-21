@@ -3,7 +3,7 @@ version: '3.8'
 
 services:
   frontend:
-    image: sermalenk/skypro-front:lesson-34
+    image: sermalenk/skypro-front:lesson-35
     restart: always
     depends_on:
       - api
@@ -50,7 +50,7 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - ./pg_data:/var/lib/postgresql/data
+      - pg_data:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
       interval: 3s
