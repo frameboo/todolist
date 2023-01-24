@@ -29,8 +29,8 @@ class RegistrationSerializer(serializers.ModelSerializer):
         if password != password_repeat:
             raise serializers.ValidationError('Passwords do not match.')
 
-        #        hashed_password = make_password(password)
-        validated_data['password'] = make_password(validated_data['password'])
+        hashed_password = make_password(password)
+        validated_data['password'] = hashed_password
         instance = super().create(validated_data)
         return instance
 
@@ -58,6 +58,7 @@ class LoginSerializer(serializers.ModelSerializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = USER_MODEL
         fields = ['id', 'username', 'first_name', 'last_name', 'email']
@@ -76,7 +77,6 @@ class UpdatePasswordSerializer(serializers.Serializer):
         user = attrs['user']
         if not user.check_password(attrs['old_password']):
             raise serializers.ValidationError({'old_password': 'incorrect password'})
-
         return attrs
 
     def update(self, instance, validated_data):
@@ -86,6 +86,7 @@ class UpdatePasswordSerializer(serializers.Serializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = USER_MODEL
         fields = ('id', 'username', 'first_name', 'last_name', 'email')
