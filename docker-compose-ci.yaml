@@ -47,6 +47,19 @@ services:
     command: >
       sh -c "python manage.py migrate"
 
+  bot:
+    image: frameboo/todolist:$GITHUB_REF_NAME-$GITHUB_RUN_ID
+    depends_on:
+      db:
+        condition: service_healthy
+      api:
+        condition: service_started
+    environment:
+        TOKEN_TG_BOT: ${TOKEN_TG_BOT}
+    command: >
+        sh -c "python manage.py runbot"
+
+
   db:
     image: postgres:15.1-alpine
     environment:
