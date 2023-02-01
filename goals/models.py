@@ -1,25 +1,24 @@
 from django.db import models
-from django.utils import timezone
 
 
-class Board(models.Model):
+class DatesModelMixin(models.Model):
+    class Meta:
+        abstract = True
+
+    created = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+    updated = models.DateTimeField(auto_now=True, verbose_name='Дата последнего изменения')
+
+
+class Board(DatesModelMixin):
     class Meta:
         verbose_name = 'Доска'
         verbose_name_plural = 'Доски'
 
     title = models.CharField(verbose_name='Название', max_length=255)
     is_deleted = models.BooleanField(verbose_name='Удалена', default=False)
-    created = models.DateTimeField(verbose_name='Дата создания')
-    updated = models.DateTimeField(verbose_name='Дата последнего обновления')
-
-    def save(self, *args, **kwargs):
-        if not self.id:
-            self.created = timezone.now()
-        self.updated = timezone.now()
-        return super().save(*args, **kwargs)
 
 
-class GoalCategory(models.Model):
+class GoalCategory(DatesModelMixin):
     class Meta:
         verbose_name = 'Категория'
         verbose_name_plural = 'Категории'
@@ -30,17 +29,9 @@ class GoalCategory(models.Model):
     board = models.ForeignKey(
         Board, verbose_name='Доска', on_delete=models.PROTECT, related_name='categories',
     )
-    created = models.DateTimeField(verbose_name='Дата создания')
-    updated = models.DateTimeField(verbose_name='Дата последнего обновления')
-
-    def save(self, *args, **kwargs):
-        if not self.id:
-            self.created = timezone.now()
-        self.updated = timezone.now()
-        return super().save(*args, **kwargs)
 
 
-class Goal(models.Model):
+class Goal(DatesModelMixin):
     class Status(models.IntegerChoices):
         to_do = 1, 'К выполнению'
         in_progress = 2, 'В процессе'
@@ -63,25 +54,17 @@ class Goal(models.Model):
     )
     due_date = models.DateField(verbose_name='Дата выполнения')
     user = models.ForeignKey('core.User', verbose_name='Автор', on_delete=models.PROTECT)
-    category = models.ForeignKey(GoalCategory, verbose_name='категория', related_name='goals', on_delete=models.CASCADE)
-    created = models.DateTimeField(verbose_name='Дата создания')
-    updated = models.DateTimeField(verbose_name='Дата последнего обновления')
-
-    def save(self, *args, **kwargs):
-        if not self.id:
-            self.created = timezone.now()
-        self.updated = timezone.now()
-        return super().save(*args, **kwargs)
+    category = models.ForeignKey('goals.GoalCategory', verbose_name='категория', related_name='goals', on_delete=models.CASCADE)
 
 
-class GoalComment(models.Model):
+class GoalComment(DatesModelMixin):
     class Meta:
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
 
     text = models.TextField(verbose_name='Текст')
     goal = models.ForeignKey(
-        Goal,
+        'goals.Goal',
         verbose_name='Цель',
         on_delete=models.PROTECT,
         related_name='comments',
@@ -92,17 +75,9 @@ class GoalComment(models.Model):
         on_delete=models.PROTECT,
         related_name='comments',
     )
-    created = models.DateTimeField(verbose_name='Дата создания')
-    updated = models.DateTimeField(verbose_name='Дата последнего обновления')
-
-    def save(self, *args, **kwargs):
-        if not self.id:
-            self.created = timezone.now()
-        self.updated = timezone.now()
-        return super().save(*args, **kwargs)
 
 
-class BoardParticipant(models.Model):
+class BoardParticipant(DatesModelMixin):
     class Meta:
         unique_together = ('board', 'user')
         verbose_name = 'Участник'
@@ -128,11 +103,3 @@ class BoardParticipant(models.Model):
     role = models.PositiveSmallIntegerField(
         verbose_name='Роль', choices=Role.choices, default=Role.owner
     )
-    created = models.DateTimeField(verbose_name='Дата создания')
-    updated = models.DateTimeField(verbose_name='Дата последнего обновления')
-
-    def save(self, *args, **kwargs):
-        if not self.id:
-            self.created = timezone.now()
-        self.updated = timezone.now()
-        return super().save(*args, **kwargs)
